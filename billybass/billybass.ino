@@ -25,7 +25,7 @@ int AudioPin = A0;
 
 String inputString = "";         // a String to hold incoming data
 bool stringComplete = false;  // whether the string is complete
-
+bool TailIsUp = false;
 bool talkingNow = false;
 
 int motionIntervalCounter = 0;
@@ -77,27 +77,29 @@ void loop() {
 }
 
 void handleCommands(){
-    if (inputString == "IDLE")
+    if (inputString == "IDLE\n")
     {
        next_state = FISH_IDLE;
     }
 
-    if (inputString == "THINKING")
+    if (inputString == "THINKING\n")
     {
        next_state = FISH_THINKING;
     }
 
-    if (inputString == "TALKING")
+    if (inputString == "TALKING\n")
     {
        next_state = FISH_TALKING;
     }
 
-    if (inputString == "LISTENING")
+    if (inputString == "LISTENING\n")
     {
+      
+      Serial.println("Listening");
        next_state = FISH_LISTENING;
     }
 
-    if (inputString == "TESTING")
+    if (inputString == "TESTING\n")
     {
        next_state = FISH_TESTING;
     }
@@ -139,6 +141,7 @@ void handleCommands(){
     
     if (inputString == "bodyoff\n")
     {
+      
       Serial.println("stop the body");
       analogWrite(bodyPin, 0);
     }
@@ -205,6 +208,9 @@ void executeState() {
       
     case FISH_LISTENING:
       //we can flap the tail here, but for now we'll just stick it out.
+      //loop
+      
+      
       digitalWrite(tailPin, LOW);
       digitalWrite(bodyPin, HIGH);
       talkingNow = false;
@@ -212,9 +218,34 @@ void executeState() {
 
     case FISH_THINKING:
       //we can flap the tail here, but for now we'll just stick it out.
-      digitalWrite(tailPin, HIGH);
+      //digitalWrite();
+
+      if (motionIntervalCounter > 500)
+      {
+        if ( TailIsUp == true)
+        {  
+      
+          digitalWrite(tailPin, LOW);
+          TailIsUp = false;
+        }
+        else
+        {
+          TailIsUp = true;
+         
+          digitalWrite(tailPin, HIGH);
+          
+        }
+        motionIntervalCounter = 0;
+      }
+       
+      
+      //digitalWrite(tailPin, HIGH);
       digitalWrite(bodyPin, LOW);
+      //if (tailPin, HIGH)
       talkingNow = false;
+      motionIntervalCounter = motionIntervalCounter + 1;
+
+      
       break;
     case FISH_TESTING:
       //don't alter any pin states here, so we can run the manual commands like tail flap
