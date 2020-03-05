@@ -35,6 +35,7 @@ enum alexaStates {
   FISH_THINKING,
   FISH_TALKING,
   FISH_LISTENING,
+  FISH_TESTING,
 
 };
 
@@ -94,6 +95,11 @@ void handleCommands(){
     if (inputString == "LISTENING")
     {
        next_state = FISH_LISTENING;
+    }
+
+    if (inputString == "TESTING")
+    {
+       next_state = FISH_TESTING;
     }
 
     
@@ -210,6 +216,10 @@ void executeState() {
       digitalWrite(bodyPin, LOW);
       talkingNow = false;
       break;
+    case FISH_TESTING:
+      //don't alter any pin states here, so we can run the manual commands like tail flap
+      break;
+     
     case FISH_IDLE:
     default:
       talkingNow = false;
